@@ -1,0 +1,23 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSockets</title>
+</head>
+
+<body>
+    <h1>WebSockets Tutorial</h1>
+    <script>
+        const wsc = new WebSocket('ws://127.0.0.1:7071');
+        wsc.onopen = function () {
+            wsc.send('Hello from client');
+        };
+        wsc.onmessage = function (message) {
+            console.log('New notification: ' + message.data)
+        };
+    </script>
+</body>
+
+</html>
