@@ -1,28 +1,33 @@
-const http = require('http')
-const express = require('express')
+const http = require('http');
+const express = require('express');
 const WebSocket = require('ws');
 const { processEvent, storeClientIdWS } = require('./events');
 
 const app = express();
-const server = http.createServer(app)
+const server = http.createServer(app);
 //https://codedamn.com/news/full-stack/how-to-build-a-websocket-in-node-js
 
-app.use(express.static('public'))
+app.use(express.static('public'));
 
 server.listen(7070, function () {
-  console.log('Server running')
-})
+  console.log('Server running');
+});
 
 // Create a WebSocket server
 const wss = new WebSocket.Server({ port: 7071 });
 
-const clients = {}
+const clients = {};
 
 // Handle WebSocket connections
 wss.on('connection', (ws, req) => {
   console.log(`Conn Url ${req && req.url}`, getJsonFromUrl(req.url));
-  const clientId = getJsonFromUrl(req.url)["clientId"];
-  storeClientIdWS(clientId, ws)
+  const clientId = getJsonFromUrl(req.url)['clientId'];
+  // const isFirstClient = Object.keys(clients).length === 0;
+  // const isHost = isFirstClient;
+  storeClientIdWS(clientId, ws);
+  // if (isFirstClient) {
+  //   ws.isHost = true;
+  // }
   // Handle incoming messages
   ws.on('message', (message) => {
     try {
@@ -34,7 +39,12 @@ wss.on('connection', (ws, req) => {
   });
 
   // Send a message to the client
-  ws.send(JSON.stringify({ eventName: "CONNECTED", message: 'Hello, client!' }));
+  ws.send(
+    JSON.stringify({
+      eventName: 'CONNECTED',
+      message: 'Hello, client!'
+    })
+  );
 });
 
 // Start the WebSocket server
@@ -49,15 +59,15 @@ function getClientIdFromConnection(connection) {
 }
 
 function getJsonFromUrl(query) {
-  if (query.startsWith("/")) {
-    query = query.substr(1)
+  if (query.startsWith('/')) {
+    query = query.substr(1);
   }
-  if (query.startsWith("?")) {
-    query = query.substr(1)
+  if (query.startsWith('?')) {
+    query = query.substr(1);
   }
   var result = {};
-  query.split("&").forEach(function (part) {
-    var item = part.split("=");
+  query.split('&').forEach(function (part) {
+    var item = part.split('=');
     result[item[0]] = decodeURIComponent(item[1]);
   });
   return result;
